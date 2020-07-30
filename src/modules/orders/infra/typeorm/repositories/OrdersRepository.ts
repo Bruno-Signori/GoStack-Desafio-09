@@ -12,11 +12,22 @@ class OrdersRepository implements IOrdersRepository {
   }
 
   public async create({ customer, products }: ICreateOrderDTO): Promise<Order> {
-    // TODO
+    const order = await this.ormRepository.create({
+      customer,
+      order_products: products,
+    });
+    await this.ormRepository.save(order);
+
+    return order;
   }
 
   public async findById(id: string): Promise<Order | undefined> {
-    // TODO
+    // aqui estou trazendo alem do order_products tbm o customer(cliente) junto nesta busca.
+    // posso fazer tbm isso usando o eager load direto nas entities
+    const orderId = await this.ormRepository.findOne(id, {
+      relations: ['order_products', 'customer'],
+    });
+    return orderId;
   }
 }
 
